@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Feedback Form</title>
+<style>
+body{
+font-family: Arial;
+display:flex;
+justify-content:center;
+}
+
+form{
+width:300px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.msg{
+color:green;
+}
+.error{
+color:red;
+}
+</style>
+</head>
+
+<body>
+
+<form id="feedbackForm">
+
+<input type="text" id="name" placeholder="Name">
+
+<input type="email" id="email" placeholder="Email">
+
+<select id="event">
+<option value="">Select Event</option>
+<option>Webinar</option>
+<option>Workshop</option>
+<option>Meetup</option>
+</select>
+
+<select id="rating">
+<option value="">Rating</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+</select>
+
+<textarea id="comments" placeholder="Comments"></textarea>
+
+<button type="submit">Submit</button>
+
+<div id="message"></div>
+
+</form>
+
+<script>
+
+class FeedbackFormHandler{
+
+constructor(){
+this.form=document.getElementById("feedbackForm");
+this.message=document.getElementById("message");
+
+this.form.addEventListener("submit",(e)=>{
+e.preventDefault();
+this.handleSubmit();
+});
+}
+
+validateForm(data){
+
+if(data.name.length<3) return "Name minimum 3 character";
+
+let emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if(!emailRegex.test(data.email)) return "Invalid Email";
+
+if(data.event=="") return "Select event";
+
+if(data.rating<1 || data.rating>5) return "Rating 1-5";
+
+if(data.comments.length<10) return "Comment minimum 10 character";
+
+return true;
+}
+
+saveToLocalStorage(data){
+
+let feedbacks=JSON.parse(localStorage.getItem("feedbacks")) || [];
+
+feedbacks.push(data);
+
+localStorage.setItem("feedbacks",JSON.stringify(feedbacks));
+}
+
+clearForm(){
+this.form.reset();
+}
+
+showMessage(msg,type){
+
+this.message.innerHTML=msg;
+
+this.message.className= type=="success" ? "msg" : "error";
+}
+
+handleSubmit(){
+
+let data={
+
+name:document.getElementById("name").value,
+email:document.getElementById("email").value,
+event:document.getElementById("event").value,
+rating:Number(document.getElementById("rating").value),
+comments:document.getElementById("comments").value
+
+};
+
+let valid=this.validateForm(data);
+
+if(valid===true){
+
+this.saveToLocalStorage(data);
+
+this.showMessage("Feedback Saved Successfully","success");
+
+this.clearForm();
+
+}else{
+
+this.showMessage(valid,"error");
+
+}
+
+}
+
+}
+
+new FeedbackFormHandler();
+
+</script>
+
+</body>
+</html>

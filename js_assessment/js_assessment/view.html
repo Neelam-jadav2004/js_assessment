@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>View Feedback</title>
+</head>
+
+<body>
+
+<input type="text" id="search" placeholder="Search">
+
+<table border="1">
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Event</th>
+<th>Rating</th>
+<th>Comments</th>
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<script>
+
+class FeedbackViewer{
+
+constructor(){
+
+this.table=document.getElementById("tableBody");
+this.search=document.getElementById("search");
+
+this.search.addEventListener("input",()=>this.render());
+
+this.render();
+
+}
+
+getData(){
+return JSON.parse(localStorage.getItem("feedbacks")) || [];
+}
+
+render(){
+
+let data=this.getData();
+
+let keyword=this.search.value.toLowerCase();
+
+let filtered=data.filter(f=>{
+
+return f.name.toLowerCase().includes(keyword)
+|| f.event.toLowerCase().includes(keyword);
+
+});
+
+this.table.innerHTML="";
+
+if(filtered.length==0){
+
+this.table.innerHTML="<tr><td colspan='5'>No feedback found</td></tr>";
+
+return;
+}
+
+filtered.map(f=>{
+
+this.table.innerHTML+=`
+
+<tr>
+<td>${f.name}</td>
+<td>${f.email}</td>
+<td>${f.event}</td>
+<td>${f.rating}</td>
+<td>${f.comments}</td>
+</tr>
+
+`;
+
+});
+
+}
+
+}
+
+new FeedbackViewer();
+
+</script>
+
+</body>
+</html>
